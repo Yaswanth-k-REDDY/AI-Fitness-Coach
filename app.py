@@ -53,7 +53,17 @@ st.caption(
 )
 
 # Load Data
-df = pd.read_csv("workout_logs.csv")
+import os
+
+if os.path.exists("workout_logs.csv"):
+    df = pd.read_csv("workout_logs.csv")
+else:
+    df = pd.DataFrame({
+        "Date": ["Demo"],
+        "Exercise": ["Bicep Curl"],
+        "Reps": [10],
+        "Duration": [30]
+    })
 
 # Welcome Section
 colA, colB = st.columns([2, 1])
