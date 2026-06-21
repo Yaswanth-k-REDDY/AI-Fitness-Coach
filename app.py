@@ -10,7 +10,20 @@ st.set_page_config(
 
 # Sidebar
 st.sidebar.title("🏋️ AI Fitness Coach")
+st.sidebar.markdown("---")
 
+st.sidebar.subheader("📌 Quick Stats")
+
+st.sidebar.markdown(
+    """
+- 💪 Exercise Tracking
+- 📊 Analytics
+- 🏆 Achievements
+- 🔥 Fitness Score
+"""
+)
+
+st.sidebar.markdown("---")
 st.sidebar.info(
     """
 Built using:
@@ -23,7 +36,17 @@ Built using:
 )
 
 # Header
-st.title("🏋️ AI Fitness Coach Dashboard")
+st.markdown(
+    """
+    <h1 style='text-align:center; color:#4CAF50;'>
+    🏋️ AI Fitness Coach Dashboard
+    </h1>
+    <p style='text-align:center;'>
+    AI-powered workout tracking and analytics
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 
 st.caption(
     "AI-powered workout tracking and analytics"
@@ -58,7 +81,25 @@ with colB:
 
 # Achievement System
 max_reps = df["Reps"].max()
+workout_count = len(df)
 
+if workout_count >= 20:
+
+    st.success(
+        "🔥 20 Workout Streak!"
+    )
+
+elif workout_count >= 10:
+
+    st.success(
+        "🔥 10 Workout Streak!"
+    )
+
+elif workout_count >= 5:
+
+    st.success(
+        "🔥 5 Workout Streak!"
+    )
 if max_reps >= 100:
 
     st.success(
@@ -92,7 +133,20 @@ exercise = st.selectbox(
 filtered_df = df[
     df["Exercise"] == exercise
 ]
+daily_goal = 200
 
+goal_progress = min(
+    int((filtered_df["Reps"].sum() / daily_goal) * 100),
+    100
+)
+
+st.subheader("🎯 Daily Goal Progress")
+
+st.progress(goal_progress)
+
+st.write(
+    f"{filtered_df['Reps'].sum()} / {daily_goal} Reps"
+)
 # Metrics
 total_workouts = len(filtered_df)
 
@@ -113,6 +167,17 @@ calories = round(
 )
 
 fitness_score = total_reps * 2
+if total_reps >= 100:
+
+    status = "🔥 Excellent"
+
+elif total_reps >= 50:
+
+    status = "💪 Active"
+
+else:
+
+    status = "🚀 Getting Started"
 
 # Sidebar Personal Best
 st.sidebar.metric(
@@ -124,23 +189,19 @@ st.sidebar.metric(
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric(
-        "🏋️ Workouts",
-        total_workouts
+    st.success(
+        f"🏆 Workouts\n\n# {total_workouts}"
     )
 
 with col2:
-    st.metric(
-        "💪 Total Reps",
-        total_reps
+    st.info(
+        f"💪 Total Reps\n\n# {total_reps}"
     )
 
 with col3:
-    st.metric(
-        "⏱️ Duration",
-        total_duration
+    st.warning(
+        f"⏱️ Duration\n\n# {total_duration}"
     )
-
 col4, col5, col6, col7 = st.columns(4)
 
 with col4:
