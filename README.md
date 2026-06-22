@@ -51,6 +51,23 @@ python squat_counter.py
 
 python pushup_counter.py
 
+## 📸 Project Screenshots
+
+### Dashboard
+![Dashboard](dashboard.png)
+
+### Bicep Curl Counter
+![Bicep Curl](bicep_curl.png)
+
+### Squat Counter
+![Squat Counter](squat.png)
+
+### Push-Up Counter
+![Push-Up Counter](pushup.png)
+
+### Analytics Dashboard
+![Analytics](analytics.png)
+
 ## Future Enhancements
 
 * Voice Coaching
