@@ -3,8 +3,6 @@ __pycache__/
 *.pyc
 *.pyo
 
-workout_logs.csv
-
 .vscode/
 
 *.log

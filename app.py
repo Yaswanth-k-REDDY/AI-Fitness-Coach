@@ -57,6 +57,7 @@ import os
 
 if os.path.exists("workout_logs.csv"):
     df = pd.read_csv("workout_logs.csv")
+    df["Date"] = pd.to_datetime(df["Date"])
 else:
     df = pd.DataFrame({
         "Date": ["Demo"],
@@ -90,6 +91,35 @@ with colB:
     )
 
 # Achievement System
+unique_days = df["Date"].dt.date.nunique()
+
+st.sidebar.metric(
+    "🔥 Workout Days",
+    unique_days
+)
+if unique_days >= 30:
+
+    st.success(
+        "🏆 Fitness Legend!"
+    )
+
+elif unique_days >= 15:
+
+    st.success(
+        "🥇 Consistent Performer!"
+    )
+
+elif unique_days >= 7:
+
+    st.success(
+        "🥈 Weekly Warrior!"
+    )
+
+else:
+
+    st.info(
+        "🚀 Keep Building Your Streak!"
+    )
 max_reps = df["Reps"].max()
 workout_count = len(df)
 
@@ -144,7 +174,39 @@ filtered_df = df[
     df["Exercise"] == exercise
 ]
 daily_goal = 200
+weekly_goal = 1000
 
+# Weekly Goal
+
+weekly_progress = min(
+    int((df["Reps"].sum() / weekly_goal) * 100),
+    100
+)
+
+st.subheader("🏆 Weekly Goal Progress")
+
+st.progress(weekly_progress)
+
+st.write(
+    f"{df['Reps'].sum()} / {weekly_goal} Reps"
+)
+if df["Reps"].sum() >= weekly_goal:
+
+    st.success(
+        "🏆 Weekly Goal Achieved!"
+    )
+
+elif df["Reps"].sum() >= weekly_goal * 0.75:
+
+    st.info(
+        "🔥 Almost There!"
+    )
+
+else:
+
+    st.warning(
+        "🎯 Keep Going!"
+    )
 goal_progress = min(
     int((filtered_df["Reps"].sum() / daily_goal) * 100),
     100
@@ -177,6 +239,10 @@ calories = round(
 )
 
 fitness_score = total_reps * 2
+health_score = min(
+    int((fitness_score / 500) * 100),
+    100
+)
 if total_reps >= 100:
 
     status = "🔥 Excellent"
@@ -234,15 +300,312 @@ with col6:
 
 with col7:
     st.metric(
+    "❤️ Health Score",
+    f"{health_score}%"
+)
+    st.metric(
         "⭐ Fitness Score",
         fitness_score
+    )
+    st.subheader("🧠 AI Coach Insights")
+
+if total_reps >= 100:
+
+    st.success(
+        "🔥 Excellent workout consistency detected."
+    )
+
+elif total_reps >= 50:
+
+    st.info(
+        "💪 Good progress. Keep pushing!"
+    )
+
+else:
+
+    st.warning(
+        "🎯 Aim for more reps to improve fitness."
+    )
+st.info(
+    f"Current Status: {status}"
+)
+st.divider()
+st.subheader("📅 Weekly Summary")
+
+colA, colB, colC = st.columns(3)
+
+with colA:
+    st.metric(
+        "Workouts",
+        len(df)
+    )
+
+with colB:
+    st.metric(
+        "Reps",
+        df["Reps"].sum()
+    )
+
+with colC:
+    st.metric(
+        "Duration",
+        df["Duration"].sum()
+    )
+st.subheader("🏆 Personal Records")
+
+records = df.groupby("Exercise")["Reps"].max()
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    if "Bicep Curl" in records.index:
+        st.metric(
+            "💪 Best Bicep Curl",
+            records["Bicep Curl"]
+        )
+
+with col2:
+
+    if "Squat" in records.index:
+        st.metric(
+            "🦵 Best Squat",
+            records["Squat"]
+        )
+
+with col3:
+
+    if "Push-Up" in records.index:
+        st.metric(
+            "🤸 Best Push-Up",
+            records["Push-Up"]
+        )
+
+st.divider()
+st.divider()
+# Analytics
+st.subheader("🏆 Personal Records")
+
+records = df.groupby("Exercise")["Reps"].max()
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if "Bicep Curl" in records.index:
+        st.metric(
+            "💪 Best Bicep Curl",
+            records["Bicep Curl"]
+        )
+
+with col2:
+    if "Squat" in records.index:
+        st.metric(
+            "🦵 Best Squat",
+            records["Squat"]
+        )
+
+with col3:
+    if "Push-Up" in records.index:
+        st.metric(
+            "🤸 Best Push-Up",
+            records["Push-Up"]
+        )
+
+st.divider()
+
+# ADD LEADERBOARD HERE 👇
+
+st.subheader("🥇 Exercise Leaderboard")
+
+leaderboard = df.groupby(
+    "Exercise"
+)["Reps"].sum().sort_values(
+    ascending=False
+)
+
+st.dataframe(
+    leaderboard,
+    use_container_width=True
+)
+
+st.divider()
+st.subheader("📥 Download Workout Report")
+
+csv = df.to_csv(index=False)
+
+st.download_button(
+    label="📄 Download Workout Report",
+    data=csv,
+    file_name="fitness_report.csv",
+    mime="text/csv"
+)
+top_exercise = leaderboard.index[0]
+
+st.success(
+    f"🏆 Top Performing Exercise: {top_exercise}"
+)
+st.divider()
+st.subheader("📈 Fitness Trend Analysis")
+
+latest_reps = df["Reps"].iloc[-1]
+
+best_reps_overall = df["Reps"].max()
+
+improvement = best_reps_overall - latest_reps
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric(
+        "Latest Session",
+        latest_reps
+    )
+
+with col2:
+    st.metric(
+        "Best Session",
+        best_reps_overall
+    )
+
+with col3:
+    st.metric(
+        "Improvement Needed",
+        improvement
+    )
+
+st.divider()
+st.subheader("📈 Fitness Trend Analysis")
+
+latest_reps = df["Reps"].iloc[-1]
+
+best_reps_overall = df["Reps"].max()
+
+improvement = best_reps_overall - latest_reps
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric(
+        "Latest Session",
+        latest_reps
+    )
+
+with col2:
+    st.metric(
+        "Best Session",
+        best_reps_overall
+    )
+
+with col3:
+    st.metric(
+        "Improvement Needed",
+        improvement
     )
 
 st.divider()
 
-# Analytics
-st.header("📊 Analytics")
+# PASTE EXERCISE INSIGHTS HERE 👇
 
+st.subheader("🧠 Exercise Insights")
+
+most_performed = df.groupby(
+    "Exercise"
+)["Reps"].sum().idxmax()
+
+st.success(
+    f"🏆 Most Performed Exercise: {most_performed}"
+)
+
+avg_session = round(
+    df["Reps"].mean(),
+    2
+)
+
+st.info(
+    f"📊 Average Reps Per Session: {avg_session}"
+)
+
+st.divider()
+
+# Analytics starts here 👇
+st.subheader("🏅 Fitness Level")
+
+total_reps_all = df["Reps"].sum()
+
+if total_reps_all >= 500:
+
+    level = "💎 Elite"
+
+elif total_reps_all >= 250:
+
+    level = "🥇 Advanced"
+
+elif total_reps_all >= 100:
+
+    level = "🥈 Intermediate"
+
+else:
+
+    level = "🥉 Beginner"
+
+st.success(
+    f"Your Fitness Level: {level}"
+)
+
+st.divider()
+
+# Analytics starts here 👇
+tab1, tab2 = st.tabs(
+    ["📊 Analytics", "🏆 Achievements"]
+)
+st.subheader("🤖 AI Recommendation Engine")
+
+exercise_totals = df.groupby("Exercise")["Reps"].sum()
+
+top_exercise = exercise_totals.idxmax()
+
+if top_exercise == "Bicep Curl":
+
+    st.info(
+        "💪 You focus heavily on Bicep Curls. Add more Push-Ups and Squats for balanced strength."
+    )
+
+elif top_exercise == "Push-Up":
+
+    st.info(
+        "🤸 Great upper body focus. Consider adding Squats for lower body development."
+    )
+
+elif top_exercise == "Squat":
+
+    st.info(
+        "🦵 Strong lower body training. Include Push-Ups and Bicep Curls for balance."
+    )
+
+st.divider()
+with tab1:
+
+    st.header("📊 Analytics")
+st.subheader("🎖️ Achievement Gallery")
+
+badges = []
+
+if total_reps_all >= 100:
+    badges.append("🥉 100 Reps Club")
+
+if total_reps_all >= 250:
+    badges.append("🥈 250 Reps Club")
+
+if total_reps_all >= 500:
+    badges.append("🥇 500 Reps Club")
+
+if workout_count >= 10:
+    badges.append("🔥 10 Workout Streak")
+
+for badge in badges:
+    st.write(badge)
+
+st.divider()
 # Workout History
 st.subheader("📋 Workout History")
 
@@ -272,6 +635,17 @@ st.bar_chart(
 st.divider()
 
 # Exercise Distribution
+st.subheader("📊 Exercise Comparison")
+
+exercise_totals = df.groupby(
+    "Exercise"
+)["Reps"].sum()
+
+st.bar_chart(
+    exercise_totals
+)
+
+st.divider()
 st.subheader("🥧 Exercise Distribution")
 
 fig, ax = plt.subplots()
@@ -288,7 +662,25 @@ st.pyplot(fig)
 
 # Footer
 st.divider()
+with tab2:
 
+    st.subheader("🏆 Achievement Summary")
+
+    st.write(
+        f"Workout Sessions: {workout_count}"
+    )
+
+    st.write(
+        f"Workout Days: {unique_days}"
+    )
+
+    st.write(
+        f"Total Reps: {total_reps_all}"
+    )
+
+    st.write(
+        f"Fitness Level: {level}"
+    )
 st.caption(
-    "Built by Yaswanth using Python, OpenCV, MediaPipe and Streamlit 🚀"
+    "AI Fitness Coach v2.0 | Built by Yaswanth using Python, OpenCV, MediaPipe and Streamlit 🚀"
 )
