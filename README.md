@@ -2,6 +2,10 @@
 
 An AI-powered fitness coaching system built using Python, OpenCV, MediaPipe, and Streamlit.
 
+## 🌐 Live Demo
+
+https://ai-fitness-coach-9sxapbnaaggbqngbeholmj.streamlit.app
+
 ## Features
 
 * Real-time pose detection
